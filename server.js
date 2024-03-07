@@ -1,6 +1,10 @@
 const express = require("express");
 const path = require("path");
-
+const fs = require("fs");
+const options = {
+  key: fs.readFileSync('./example.com+4-key.pem'),
+  cert: fs.readFileSync('./example.com+4.pem')
+}
 const {
   generatePdf,
 } = require("./src/pdfCreate");
@@ -16,6 +20,8 @@ app.use(
     origin: "*", // 모든 출처 허용 옵션. true 를 써도 된다. // 배포 시 제거 요망
   })
 );
+const server = require('https').createServer(options, app);
+
 app.post("/download/", (req, res) => {
   const html = req.body.html;
   const name = req.body.name;
@@ -30,6 +36,7 @@ app.post("/download/", (req, res) => {
     res.send(data);
   });
 });
-app.listen(port, () => {
-  console.log("Listening...");
+
+server.listen(port, () => {
+  console.log('Listening...')
 });
